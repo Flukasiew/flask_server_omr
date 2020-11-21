@@ -1,7 +1,9 @@
 from flask import Flask
+from flask_crontab import Crontab
 
 
 app = Flask(__name__)
+crontab = Crontab(app)
 
 
 if app.config["ENV"] == "production":
@@ -17,4 +19,5 @@ else:
     app.config.from_object("config.ProductionConfig")
 
 
+from app import file_cleanup
 from app import views
