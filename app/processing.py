@@ -1,10 +1,11 @@
-from subprocess import Popen
+from subprocess import Popen, run, CalledProcessError, PIPE
 from os import remove
 from re import findall
-from midi2audio import FluidSynth
 import cv2
 from PIL import Image
 import numpy as np
+from uuid import uuid4
+from pathlib import Path
 
 
 def threshold_image(image):
@@ -19,8 +20,8 @@ def resize(image, height):
     if len(image.shape) != 2 or image.shape[0] == 0 or image.shape[1] == 0:
         raise ValueError("Wrong shape of image in resize")
     width = int(float(height * image.shape[1]) / image.shape[0])
-    sample_img = cv2.resize(image, (width, height))
-    return sample_img
+    resized_img = cv2.resize(image, (width, height))
+    return resized_img
 
 
 def preprocess_image(image, height):
@@ -30,18 +31,14 @@ def preprocess_image(image, height):
     return image
 
 
-def fix_notation(lily):
-    lily = "{ { " + lily.replace("|", "} {")
-    if lily[-1] == "{":
-        lily = lily[:-2]
-    else:
-        lily += "}"
-
+def lily_fix_notation(lily):
+    lily = "{ { " + lily.strip("| ").replace("|", "} {")
+    lily += " } }"
     return lily
 
 
 # lily - lilypond w formie stringu, key - oznaczenie tonacji, int w przedziale [-6;6]
-def change_lilypond_key(lily, key):
+def lily_set_key(lily, key):
     if key > 0:
         return apply_sharps(lily, key)
     if key < 0:
@@ -69,7 +66,7 @@ def apply_flats(lily, key):
     if key <= -1:
         lily = lily.replace("b", "bes")
     if key <= -2:
-        lily = lily.replace(" e", " ees")
+        lily = lily.replace("e", " ees")
     if key <= -3:
         lily = lily.replace("a", "aes")
     if key <= -4:
@@ -81,7 +78,7 @@ def apply_flats(lily, key):
     return lily
 
 
-def adjust_from_bass_notation(lily):
+def lily_adjust_from_bass_notation(lily):
     """
     bierze lilypond string, zwraca ten string dostosowany do klucza basowego f
     """
@@ -128,35 +125,98 @@ def adjust_from_bass_notation(lily):
     return lily
 
 
-def postprocess_lily(lily, options):
-    lily = fix_notation(lily)
-
-    # Here we check for options and applly them also
+def lily_set_tempo(lily, tempo):
+    if tempo == 1:
+        lily = lily[:2] + r"\tempo 4 = 60 " + lily[2:]
+    elif tempo == 2:
+        lily = lily[:2] + r"\tempo 4 = 120 " + lily[2:]
+    elif tempo == 3:
+        lily = lily[:2] + r"\tempo 4 = 180 " + lily[2:]
 
     return lily
 
 
-def generate_mid(ly_string, filename):
-    ly_string = '\\version "2.10.33"\n' + ly_string
+def lily_postprocess(lily, clef=1, key=0, tempo=1):
+    if lily == "":
+        raise ValueError("Empty Lilypond String")
+    if clef == 2:
+        lily = lily_adjust_from_bass_notation(lily)
+    lily = lily_set_key(lily, key)
+    if clef == 2:
+        lily = lily[:2] + r"\clef bass " + lily[2:]
+    lily = lily_fix_notation(lily)
+    lily = lily_set_tempo(lily, tempo)
+
+    return lily
+
+
+def generate_mid(lily, path):
+    ly_string = '\\version "2.10.33"\n'
+    ly_string += "\\score{\n"
+    ly_string += lily + "\n"
+    ly_string += "\\midi{}}"
     try:
-        f = open(filename + ".ly", "w")
+        f = open(path + ".ly", "w")
         f.write(ly_string)
         f.close()
     except:
         return False
-    command = f"lilypond -dmidi-extension=mid -o ./app/data/{filename} {filename}.ly"
-    p = Popen(command, shell=True).wait()
-    remove(filename + ".ly")
+    # command = f"lilypond -dmidi-extension=midi -o {path} {path}.ly"
+    try:
+        # run_result = run(command, shell=True, check=True)
+        run_result = run(
+            ["lilypond", "-dmidi-extension=midi", "-o", f"{path}", f"{path}.ly"],
+            check=True,
+        )
+    except CalledProcessError:
+        if Path(path + ".ly").is_file():
+            remove(path + ".ly")
+        if Path(path + ".midi").is_file():
+            remove(path + ".midi")
+        return False
+
+    if Path(path + ".ly").is_file():
+        remove(path + ".ly")
     return True
 
 
-def generate_flac(path):
-    fs = FluidSynth()
-    output_path = f"{path[:-4]}.flac"
-    fs.midi_to_audio("path", output_path)
+def generate_mp3(path):
 
-    return output_path
+    if not Path(f"{path}.midi").is_file():
+        return False
+    command = f"fluidsynth -l -T raw -F - /usr/share/soundfonts/FluidR3_GM.sf2 {path}.midi | twolame -b 256 -r - {path}.mp3"
+    out = run(command, shell=True, check=True)
+
+    # p1 = Popen(
+    #     [
+    #         "fluidsynth",
+    #         "-l",
+    #         "-T",
+    #         "raw",
+    #         "-F",
+    #         "-",
+    #         "/usr/share/soundfonts/FluidR3_GM.sf2",
+    #         f"{path}.midi",
+    #     ],
+    #     stdout=PIPE,
+    # )
+    # p2 = Popen(
+    #     ["twolame", "-b", "256", "-r", "-", f"{path}.mp3"], stdin=p1.stdout, stdout=PIPE
+    # )
+    # p1.stdout.close()
+    # output = p2.communicate()
+
+    if not Path(f"{path}.mp3").is_file():
+        return False
+    return True
 
 
-def generate_audio(filename):
-    pass
+def generate_audio(lily, dir_path="./app/data"):
+    filename = uuid4().hex
+    path = f"{dir_path}/{filename}"
+
+    if generate_mid(lily, path):
+        if generate_mp3(path):
+            return f"{path}.mp3"
+    else:
+        return False

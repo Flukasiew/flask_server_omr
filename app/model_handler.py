@@ -1,10 +1,19 @@
 import tensorflow as tf
 import numpy as np
+import os
 
 
 class ModelHandler:
     def __init__(self):
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
         tf.reset_default_graph()
+        # config = tf.ConfigProto(device_count={"CPU": 0})
+        # sess = tf.Session(config=config)
+        # self.sess = tf.InteractiveSession(config=config)
+        if tf.test.gpu_device_name():
+            print("GPU found")
+        else:
+            print("No GPU found")
         self.sess = tf.InteractiveSession()
         dict_file = open("./app/model/vocab.txt", "r")
         dict_list = dict_file.read().splitlines()
@@ -29,6 +38,8 @@ class ModelHandler:
         self.decoded, _ = tf.nn.ctc_greedy_decoder(self.logits, self.seq_len)
 
     def predict(self, image):
+        print("INSIDEEEEEEEEEEEEEEEEEEEEEEEE")
+
         def sparse_tensor_to_strs(sparse_tensor):
             indices = sparse_tensor[0][0]
             values = sparse_tensor[0][1]
@@ -56,6 +67,10 @@ class ModelHandler:
 
         # Function for Filip
         image = np.asarray(image).reshape(1, image.shape[0], image.shape[1], 1)
+        if tf.test.gpu_device_name():
+            print("GPU found")
+        else:
+            print("No GPU found")
         seq_lengths = [image.shape[2] / self.WIDTH_REDUCTION]
         prediction = self.sess.run(
             self.decoded,
@@ -65,6 +80,7 @@ class ModelHandler:
                 self.rnn_keep_prob: 1.0,
             },
         )
+        print("WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
         int_predictions = sparse_tensor_to_strs(prediction)
         str_prediction = " ".join([self.int2word[w] for w in int_predictions[0]])
 

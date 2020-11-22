@@ -1,7 +1,7 @@
 from app import app
 from app.processing import *
 from app.model_handler import ModelHandler
-from flask import request, render_template, jsonify
+from flask import request, render_template, jsonify, send_from_directory, url_for
 
 
 model_handler = ModelHandler()
@@ -42,7 +42,6 @@ def img_score():
     file = request.files["image"]
     img = np.asarray(Image.open(file.stream))
 
-    print(img.shape, type(img))
     settings = request.form.to_dict()
 
     img = preprocess_image(img, model_handler.HEIGHT)
@@ -53,6 +52,38 @@ def img_score():
         {
             "msg": result,
         }
+    )
+
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    file = request.files["image"]
+    img = np.asarray(Image.open(file.stream))
+
+    # print(img.shape, type(img))
+    settings = request.form.to_dict()
+
+    img = preprocess_image(img, model_handler.HEIGHT)
+    print(
+        "DOBRAAAAAAAAAAAAAAa XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD MORDOOOOOOOOOOOOOOOOO"
+    )
+    predicted_lily = model_handler.predict(img)
+    print(
+        "XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD MORDOOOOOOOOOOOOOOOOO"
+    )
+    processed_lily = lily_postprocess(
+        predicted_lily,
+        int(settings.get("clef", 1)),
+        int(settings.get("key", 0)),
+        int(settings.get("tempo", 1)),
+    )
+    print(
+        " BEKAAA CHLOPAKIIIIIIIIIIIIIII XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD MORDOOOOOOOOOOOOOOOOO"
+    )
+
+    path = generate_audio(processed_lily)
+    return send_from_directory(
+        "data", path.split("/")[-1], mimetype="audio/mpeg", as_attachment=True
     )
 
 
