@@ -64,21 +64,12 @@ def predict():
     settings = request.form.to_dict()
 
     img = preprocess_image(img, model_handler.HEIGHT)
-    print(
-        "DOBRAAAAAAAAAAAAAAa XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD MORDOOOOOOOOOOOOOOOOO"
-    )
     predicted_lily = model_handler.predict(img)
-    print(
-        "XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD MORDOOOOOOOOOOOOOOOOO"
-    )
     processed_lily = lily_postprocess(
         predicted_lily,
         int(settings.get("clef", 1)),
         int(settings.get("key", 0)),
         int(settings.get("tempo", 1)),
-    )
-    print(
-        " BEKAAA CHLOPAKIIIIIIIIIIIIIII XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD MORDOOOOOOOOOOOOOOOOO"
     )
 
     path = generate_audio(processed_lily)

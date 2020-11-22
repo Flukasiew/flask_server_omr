@@ -10,10 +10,6 @@ class ModelHandler:
         # config = tf.ConfigProto(device_count={"CPU": 0})
         # sess = tf.Session(config=config)
         # self.sess = tf.InteractiveSession(config=config)
-        if tf.test.gpu_device_name():
-            print("GPU found")
-        else:
-            print("No GPU found")
         self.sess = tf.InteractiveSession()
         dict_file = open("./app/model/vocab.txt", "r")
         dict_list = dict_file.read().splitlines()
@@ -67,10 +63,6 @@ class ModelHandler:
 
         # Function for Filip
         image = np.asarray(image).reshape(1, image.shape[0], image.shape[1], 1)
-        if tf.test.gpu_device_name():
-            print("GPU found")
-        else:
-            print("No GPU found")
         seq_lengths = [image.shape[2] / self.WIDTH_REDUCTION]
         prediction = self.sess.run(
             self.decoded,
@@ -80,7 +72,6 @@ class ModelHandler:
                 self.rnn_keep_prob: 1.0,
             },
         )
-        print("WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYy")
         int_predictions = sparse_tensor_to_strs(prediction)
         str_prediction = " ".join([self.int2word[w] for w in int_predictions[0]])
 
