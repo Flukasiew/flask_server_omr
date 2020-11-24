@@ -25,6 +25,8 @@ def resize(image, height):
 
 
 def preprocess_image(image, height):
+    if len(image.shape) != 3:
+        raise ValueError("Wrong shape of image")
     image = threshold_image(image)
     image = resize(image, height)
     image = (255.0 - image) / 255.0

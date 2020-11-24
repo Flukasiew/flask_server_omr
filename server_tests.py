@@ -2,17 +2,10 @@ import unittest
 import numpy as np
 from app import processing, file_cleanup
 from os import remove
+from app import app
 
 
 class TestProcessing(unittest.TestCase):
-    def setUp(self):
-        pass
-
-    def test_threshold_image_empty(self):
-        image = np.zeros((128, 512, 3))
-        image[:, :256, :] = 1
-        pass
-
     def test_resize(self):
         image = np.ones((138, 560))
         result = processing.resize(image, 128)
@@ -243,8 +236,8 @@ class TestProcessing(unittest.TestCase):
         with self.assertRaises(ValueError):
             result = processing.lily_postprocess("", 1, 1, 1)
 
-        pass
 
+class TestCleanUp(unittest.TestCase):
     def test_cleanup(self):
         for i in range(5):
             f = open(f"./app/data/{i}.txt", "w")
@@ -253,6 +246,28 @@ class TestProcessing(unittest.TestCase):
         self.assertEqual(file_cleanup.cleanup(1), 0)
         self.assertEqual(file_cleanup.cleanup(0), 5)
         self.assertEqual(file_cleanup.cleanup(0), 0)
+
+
+# class TestAPI(unittest.TestCase):
+#     def setUp(self):
+#         self.app = app.test_client()
+
+#     def test_model_handler(self):
+
+#         # my_img = {"image": open("./example_65909.jpg", "rb")}
+#         my_img = {
+#             "image": (open("./test_data/test.jpg", "rb"), "./test_data/test.jpg"),
+#             "clef": 2,
+#             "key": 1,
+#         }
+#         data = {"image": open("./test_data/test.jpg", "rb")}
+
+#         response = self.app.post("/predict", data=data)
+
+#         self.app.post()
+#         self.assertEqual(response.status_code, 400)
+#         with open("new.mp3", "wb") as mp3file:
+#             mp3file.write(response.content)
 
 
 if __name__ == "__main__":

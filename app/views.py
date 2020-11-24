@@ -1,7 +1,16 @@
 from app import app
-from app.processing import *
+from app.processing import preprocess_image, lily_postprocess, generate_audio
 from app.model_handler import ModelHandler
-from flask import request, render_template, jsonify, send_from_directory, url_for
+from flask import (
+    request,
+    render_template,
+    jsonify,
+    send_from_directory,
+    url_for,
+    redirect,
+)
+from PIL import UnidentifiedImageError, Image
+import numpy as np
 
 
 model_handler = ModelHandler()
@@ -26,45 +35,27 @@ def index():
     return render_template("public/index.html", args=args)
 
 
-@app.route("/img_info", methods=["POST"])
-def img_info():
-    """
-    Test function returning img.width, img.height
-    """
-    file = request.files["image"]
-    img = Image.open(file.stream)
+@app.route("/predict_file", methods=["POST"])
+def predict_file():
 
-    return jsonify({"msg": "sucess", "size": [img.width, img.height]})
-
-
-@app.route("/img_score", methods=["POST"])
-def img_score():
-    file = request.files["image"]
-    img = np.asarray(Image.open(file.stream))
-
+    try:
+        img = request.files["image"]
+    except:
+        return "No image supplied in request", 400
+    try:
+        img = np.asarray(Image.open(img.stream))
+    except UnidentifiedImageError:
+        return "Could not read the supplied file", 400
+    try:
+        img = preprocess_image(img, model_handler.HEIGHT)
+    except ValueError as exception:
+        return str(exception), 500
     settings = request.form.to_dict()
+    try:
+        predicted_lily = model_handler.predict(img)
+    except:
+        return "Internal Model error", 500
 
-    img = preprocess_image(img, model_handler.HEIGHT)
-
-    result = model_handler.predict(img)
-
-    return jsonify(
-        {
-            "msg": result,
-        }
-    )
-
-
-@app.route("/predict", methods=["POST"])
-def predict():
-    file = request.files["image"]
-    img = np.asarray(Image.open(file.stream))
-
-    # print(img.shape, type(img))
-    settings = request.form.to_dict()
-
-    img = preprocess_image(img, model_handler.HEIGHT)
-    predicted_lily = model_handler.predict(img)
     processed_lily = lily_postprocess(
         predicted_lily,
         int(settings.get("clef", 1)),
@@ -78,11 +69,35 @@ def predict():
     )
 
 
-@app.route("/ping")
-def ping():
-    pass
+@app.route("/predict_uri", methods=["POST"])
+def predict():
 
+    try:
+        img = request.files["image"]
+    except:
+        return "No image supplied in request", 400
+    try:
+        img = np.asarray(Image.open(img.stream))
+    except UnidentifiedImageError:
+        return "Could not read the supplied file", 400
+    try:
+        img = preprocess_image(img, model_handler.HEIGHT)
+    except ValueError as exception:
+        return str(exception), 500
 
-@app.route("/demo_audio")
-def demo_audio():
-    pass
+    settings = request.form.to_dict()
+    try:
+        predicted_lily = model_handler.predict(img)
+    except:
+        return "Internal Model error", 500
+
+    processed_lily = lily_postprocess(
+        predicted_lily,
+        int(settings.get("clef", 1)),
+        int(settings.get("key", 0)),
+        int(settings.get("tempo", 1)),
+    )
+
+    path = generate_audio(processed_lily)
+
+    return jsonify(url_for("static", filename=path.split(r"/")[-1]))

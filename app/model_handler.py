@@ -34,8 +34,6 @@ class ModelHandler:
         self.decoded, _ = tf.nn.ctc_greedy_decoder(self.logits, self.seq_len)
 
     def predict(self, image):
-        print("INSIDEEEEEEEEEEEEEEEEEEEEEEEE")
-
         def sparse_tensor_to_strs(sparse_tensor):
             indices = sparse_tensor[0][0]
             values = sparse_tensor[0][1]

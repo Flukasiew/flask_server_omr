@@ -2,44 +2,26 @@
 
 import requests
 
-# from app import processing
 from uuid import uuid4
 from flask import Response
 
-# from app import file_cleanup
+import io
 
 
-def model_request():
-    url = "http://127.0.1:9090/predict"
+def main():
+    url = "http://127.0.0.1:5000/predict_uri"
     # my_img = {"image": open("./example_65909.jpg", "rb")}
-    my_img = {"image": open("./test_data/test.jpg", "rb")}
-    response = requests.post(
-        url, files=my_img, data={"clef": 2, "key": 1}, timeout=1000
-    )
+    # img = {"image": io.BytesIO(b"some initial text data")}  #
+    img = {"image": open("./test_data/test.jpg", "rb")}
+    response = requests.post(url, files=img)
 
-    print("here")
-    # convert server response into JSON format.
-    with open("new.mp3", "wb") as mp3file:
+    print(response.json())
+    with open("file://127.0.0.1:5000" + str(response.json()), "wb") as mp3file:
         mp3file.write(response.content)
-
-
-# def clean_up_check():
-#     for i in range(5):
-#         f = open(f"./app/data/{i}.txt", "w")
-#         f.close()
-
-#     print(file_cleanup.cleanup(1))
-#     print(file_cleanup.cleanup(0))
-
-
-# def main():
-#     # model_request()
-#     lily = ""
-#     processing.generate_mid(lily, "test")
-#     processing.generate_mp3("test")
+    # convert server response into JSON format.
+    # with open("new.mp3", "wb") as mp3file:
+    #     mp3file.write(response.content)
 
 
 if __name__ == "__main__":
-    # main()
-    model_request()
-    # clean_up_check()
+    main()
