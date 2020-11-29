@@ -213,7 +213,7 @@ def generate_mp3(path):
     return True
 
 
-def generate_audio(lily, dir_path="./app/data"):
+def generate_audio(lily, dir_path="./app/static"):
     filename = uuid4().hex
     path = f"{dir_path}/{filename}"
 

@@ -10,7 +10,7 @@ def cleanup(cycle=0):
 
     deleted_files_count = 0
 
-    data_dir = "/home/fef/code/flask_server_omr/app/data"
+    data_dir = "/home/fef/code/flask_server_omr/app/static"
 
     seconds = time() - (60 * cycle)
 

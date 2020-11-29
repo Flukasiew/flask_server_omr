@@ -65,7 +65,7 @@ def predict_file():
 
     path = generate_audio(processed_lily)
     return send_from_directory(
-        "data", path.split("/")[-1], mimetype="audio/mpeg", as_attachment=True
+        "static", path.split("/")[-1], mimetype="audio/mpeg", as_attachment=True
     )
 
 

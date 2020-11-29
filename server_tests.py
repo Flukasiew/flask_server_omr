@@ -239,6 +239,7 @@ class TestProcessing(unittest.TestCase):
 
 class TestCleanUp(unittest.TestCase):
     def test_cleanup(self):
+        file_cleanup.cleanup(0)
         for i in range(5):
             f = open(f"./app/data/{i}.txt", "w")
             f.close()
