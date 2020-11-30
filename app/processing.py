@@ -6,6 +6,7 @@ from PIL import Image
 import numpy as np
 from uuid import uuid4
 from pathlib import Path
+from midi2audio import FluidSynth
 
 
 def threshold_image(image):
@@ -182,33 +183,11 @@ def generate_mid(lily, path):
     return True
 
 
-def generate_mp3(path):
-
+def generate_wav(path):
     if not Path(f"{path}.midi").is_file():
         return False
-    command = f"fluidsynth -l -T raw -F - /usr/share/soundfonts/FluidR3_GM.sf2 {path}.midi | twolame -b 256 -r - {path}.mp3"
-    out = run(command, shell=True, check=True)
-
-    # p1 = Popen(
-    #     [
-    #         "fluidsynth",
-    #         "-l",
-    #         "-T",
-    #         "raw",
-    #         "-F",
-    #         "-",
-    #         "/usr/share/soundfonts/FluidR3_GM.sf2",
-    #         f"{path}.midi",
-    #     ],
-    #     stdout=PIPE,
-    # )
-    # p2 = Popen(
-    #     ["twolame", "-b", "256", "-r", "-", f"{path}.mp3"], stdin=p1.stdout, stdout=PIPE
-    # )
-    # p1.stdout.close()
-    # output = p2.communicate()
-
-    if not Path(f"{path}.mp3").is_file():
+    FluidSynth().midi_to_audio(f"{path}.midi", f"{path}.wav")
+    if not Path(f"{path}.wav").is_file():
         return False
     return True
 
@@ -218,7 +197,7 @@ def generate_audio(lily, dir_path="./app/static"):
     path = f"{dir_path}/{filename}"
 
     if generate_mid(lily, path):
-        if generate_mp3(path):
-            return f"{path}.mp3"
+        if generate_wav(path):
+            return f"{path}.wav"
     else:
         return False

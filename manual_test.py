@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-
 import requests
-
 from uuid import uuid4
 from flask import Response
 
@@ -27,6 +25,7 @@ def local_main():
 
 
 if __name__ == "__main__":
-    # local_main()
+    local_main()
+    # main()
 
-    FluidSynth().midi_to_audio("./test_data/example.midi", "output.wav")
+    # FluidSynth().midi_to_audio("./test_data/example.midi", "output.wav")
