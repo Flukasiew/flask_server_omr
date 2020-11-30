@@ -6,6 +6,7 @@ from uuid import uuid4
 from flask import Response
 
 import io
+from midi2audio import FluidSynth
 
 
 def main():
@@ -26,4 +27,6 @@ def local_main():
 
 
 if __name__ == "__main__":
-    local_main()
+    # local_main()
+
+    FluidSynth().midi_to_audio("./test_data/example.midi", "output.wav")
