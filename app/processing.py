@@ -65,10 +65,11 @@ def apply_sharps(lily, key):
 
 
 def apply_flats(lily, key):
-    if key <= -1:
-        lily = lily.replace("b", "bes")
+    # e->ees moved to first position to prevent bes -> beess
     if key <= -2:
         lily = lily.replace("e", " ees")
+    if key <= -1:
+        lily = lily.replace("b", "bes")
     if key <= -3:
         lily = lily.replace("a", "aes")
     if key <= -4:
@@ -144,8 +145,6 @@ def lily_postprocess(lily, clef=1, key=0, tempo=1):
     if clef == 2:
         lily = lily_adjust_from_bass_notation(lily)
     lily = lily_set_key(lily, key)
-    if clef == 2:
-        lily = lily[:2] + r"\clef bass " + lily[2:]
     lily = lily_fix_notation(lily)
     lily = lily_set_tempo(lily, tempo)
 
@@ -163,18 +162,18 @@ def generate_mid(lily, path):
         f.close()
     except:
         return False
-    # command = f"lilypond -dmidi-extension=midi -o {path} {path}.ly"
+    # command = f"lilypond -dmid-extension=mid -o {path} {path}.ly"
     try:
         # run_result = run(command, shell=True, check=True)
         run_result = run(
-            ["lilypond", "-dmidi-extension=midi", "-o", f"{path}", f"{path}.ly"],
+            ["lilypond", "-dmidi-extension=mid", "-o", f"{path}", f"{path}.ly"],
             check=True,
         )
     except CalledProcessError:
         if Path(path + ".ly").is_file():
             remove(path + ".ly")
-        if Path(path + ".midi").is_file():
-            remove(path + ".midi")
+        if Path(path + ".mid").is_file():
+            remove(path + ".mid")
         return False
 
     if Path(path + ".ly").is_file():
@@ -183,9 +182,9 @@ def generate_mid(lily, path):
 
 
 def generate_wav(path):
-    if not Path(f"{path}.midi").is_file():
+    if not Path(f"{path}.mid").is_file():
         return False
-    FluidSynth().midi_to_audio(f"{path}.midi", f"{path}.wav")
+    FluidSynth().midi_to_audio(f"{path}.mid", f"{path}.wav")
     if not Path(f"{path}.wav").is_file():
         return False
     return True
