@@ -10,11 +10,15 @@ from midi2audio import FluidSynth
 def main():
     url = "http://solfege.northeurope.cloudapp.azure.com/predict_uri"
     img = {"image": open("./test_data/test.jpg", "rb")}
-    response = requests.post(url, files=img)
+    settings = {"tempo": 2, "key": -5, "clef": 2}
+    response = requests.post(url, files=img, data=settings)
     print(response.content)
 
-    # with open("new.mp3", "wb") as mp3file:
-    #     mp3file.write(response.content)
+    # response = requests.get("http://solfege.northeurope.cloudapp.azure.com/ping")
+    # print(response.content)
+
+    with open("uri.txt", "w") as uri_file:
+        uri_file.write(response.json())
 
 
 def local_main():
@@ -29,8 +33,16 @@ def local_main():
         uri_file.write(response.json())
 
 
-if __name__ == "__main__":
-    local_main()
-    # main()
+def get_file():
+    url = "http://localhost:5000/geturi"
+    # url = "http://solfege.northeurope.cloudapp.azure.com/ping"
+    response = requests.get(url)
+    print(response.content)
 
-    # FluidSynth().midi_to_audio("./test_data/example.midi", "output.wav")
+
+if __name__ == "__main__":
+    # local_main()
+    # main()
+    get_file()
+
+# FluidSynth().midi_to_audio("./test_data/example.midi", "output.wav")

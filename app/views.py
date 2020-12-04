@@ -90,3 +90,8 @@ def predict_uri():
 @app.route("/ping", methods=["GET"])
 def ping():
     return "sucess"
+
+
+@app.route("/geturi", methods=["GET"])
+def get_predefined():
+    return f"/static/e10722f8e44a4b6abe557c71e0768776.wav"
