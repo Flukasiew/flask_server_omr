@@ -38,12 +38,12 @@ If not specified running commands assumes current working directory to be main d
 3.  Install conda enviroment
     1.  Download conda env from[ env](https://mega.nz/file/PaYTmAQC#DuVkHPnibDdIEsluH11Hy3Qrl48eU-TToly5KsaVOJU)
     2.  Install conda env with
-        $ conda env create -f file<sub>name.yml</sub>
+        $ conda env create -f filename.yml
     3.  Install remaining packages with pip after activating conda env
         1.  Activate enviroment with
-            $ conda activate env<sub>name</sub>
-        2.  install flask<sub>crontab</sub>
-            $ pip install flask<sub>crontab</sub>
+            $ conda activate envname
+        2.  install flask\crontab
+            $ pip install flask\_crontab
         3.  install midi2audio
             $ pip install midi2audio
 4.  Setting up model
@@ -99,7 +99,7 @@ Gives acces to file on server, streaming is possible from this file
 
 <a id="org1bd08c0"></a>
 
-## /predict\_uri</sub>/filename
+## /predict\_uri/filename
 
 Runs prediciton on the supplied image
 Returns uri in form &ldquo;static/file<sub>name</sub>&rdquo; can be used to access file on the server
