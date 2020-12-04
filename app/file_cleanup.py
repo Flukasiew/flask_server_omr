@@ -5,13 +5,14 @@ from time import time
 from app import crontab
 
 
-@crontab.job(minute="1")
-def cleanup(cycle=0):
+@crontab.job(minute="5")
+def cleanup(cycle=5):
+    """
+    Deletes entreis in static directory to get rid of useless files
+    """
 
     deleted_files_count = 0
-
-    data_dir = "/home/fef/code/flask_server_omr/app/static"
-
+    data_dir = "./app/static"
     seconds = time() - (60 * cycle)
 
     if path.exists(data_dir):

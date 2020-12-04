@@ -16,25 +16,6 @@ import numpy as np
 model_handler = ModelHandler()
 
 
-@app.route("/")
-def index():
-
-    """
-    This route will render a template.
-    If a query string comes into the URL, it will return a parsed
-    dictionary of the query string keys & values, using request.args
-    """
-
-    args = None
-    if request.args:
-
-        args = request.args
-
-        return render_template("public/index.html", args=args)
-
-    return render_template("public/index.html", args=args)
-
-
 @app.route("/predict_file", methods=["POST"])
 def predict_file():
 
@@ -70,7 +51,7 @@ def predict_file():
 
 
 @app.route("/predict_uri", methods=["POST"])
-def predict():
+def predict_uri():
 
     try:
         img = request.files["image"]
@@ -91,13 +72,21 @@ def predict():
     except:
         return "Internal Model error", 500
 
-    processed_lily = lily_postprocess(
-        predicted_lily,
-        int(settings.get("clef", 1)),
-        int(settings.get("key", 0)),
-        int(settings.get("tempo", 1)),
-    )
+    try:
+        processed_lily = lily_postprocess(
+            predicted_lily,
+            int(settings.get("clef", 1)),
+            int(settings.get("key", 0)),
+            int(settings.get("tempo", 1)),
+        )
+    except ValueError:
+        return "Wrong settings format they should be convertible to int", 500
 
     path = generate_audio(processed_lily)
 
     return jsonify(url_for("static", filename=path.split(r"/")[-1]))
+
+
+@app.route("/ping", methods=["GET"])
+def ping():
+    return "sucess"
