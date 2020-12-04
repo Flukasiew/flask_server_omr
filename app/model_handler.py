@@ -5,6 +5,7 @@ import os
 
 class ModelHandler:
     def __init__(self):
+        # making sure tf will not try to use GPU
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
         tf.reset_default_graph()
         # config = tf.ConfigProto(device_count={"CPU": 0})

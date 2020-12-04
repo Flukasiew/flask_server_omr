@@ -29,21 +29,21 @@ class TestProcessing(unittest.TestCase):
             processing.generate_mid("{{wron_note c''' e'''}}", "test"), False
         )
 
-    def test_generate_mp3(self):
+    def test_generate_wav(self):
 
-        self.assertEqual(processing.generate_mp3("./test_data/example"), True)
+        self.assertEqual(processing.generate_wav("./test_data/example"), True)
 
-        self.assertEqual(processing.generate_mp3("./test_data/I_dont_Exist"), False)
+        self.assertEqual(processing.generate_wav("./test_data/I_dont_Exist"), False)
 
-        self.assertEqual(processing.generate_mp3(""), False)
+        self.assertEqual(processing.generate_wav(""), False)
 
     def test_generate_audio(self):
 
         lily = "{ { c'''8 e''8 r4 c''2 } }"
         result = processing.generate_audio(lily)
-        self.assertEqual("mp3" in result, True)
+        self.assertEqual("wav" in result, True)
         remove(result)
-        remove(result[:-3] + "midi")
+        remove(result[:-3] + "mid")
 
         self.assertEqual(processing.generate_audio("gibeberish"), False)
         self.assertEqual(processing.generate_audio("{ not valid { c''' e'''}}"), False)
@@ -144,23 +144,23 @@ class TestProcessing(unittest.TestCase):
         )
         self.assertEqual(
             processing.apply_flats(lily, -2),
-            "c''2  ees''4 f''16 c''16 d''16 a'16 | b eess'4 a''4 f''2 |  ees''4  ees'4 g'2 |",
+            "c''2  ees''4 f''16 c''16 d''16 a'16 | bes'4 a''4 f''2 |  ees''4  ees'4 g'2 |",
         )
         self.assertEqual(
             processing.apply_flats(lily, -3),
-            "c''2  ees''4 f''16 c''16 d''16 aes'16 | b eess'4 aes''4 f''2 |  ees''4  ees'4 g'2 |",
+            "c''2  ees''4 f''16 c''16 d''16 aes'16 | bes'4 aes''4 f''2 |  ees''4  ees'4 g'2 |",
         )
         self.assertEqual(
             processing.apply_flats(lily, -4),
-            "c''2  ees''4 f''16 c''16 des''16 aes'16 | b eess'4 aes''4 f''2 |  ees''4  ees'4 g'2 |",
+            "c''2  ees''4 f''16 c''16 des''16 aes'16 | bes'4 aes''4 f''2 |  ees''4  ees'4 g'2 |",
         )
         self.assertEqual(
             processing.apply_flats(lily, -5),
-            "c''2  ees''4 f''16 c''16 des''16 aes'16 | b eess'4 aes''4 f''2 |  ees''4  ees'4 ges'2 |",
+            "c''2  ees''4 f''16 c''16 des''16 aes'16 | bes'4 aes''4 f''2 |  ees''4  ees'4 ges'2 |",
         )
         self.assertEqual(
             processing.apply_flats(lily, -6),
-            "ces''2  ees''4 f''16 ces''16 des''16 aes'16 | b eess'4 aes''4 f''2 |  ees''4  ees'4 ges'2 |",
+            "ces''2  ees''4 f''16 ces''16 des''16 aes'16 | bes'4 aes''4 f''2 |  ees''4  ees'4 ges'2 |",
         )
 
     def test_adjust_from_bass_notation(self):
@@ -189,23 +189,23 @@ class TestProcessing(unittest.TestCase):
         )
         self.assertEqual(
             processing.lily_set_key(lily, -2),
-            "c''2  ees''4 f''16 c''16 d''16 a'16 | b eess'4 a''4 f''2 |  ees''4  ees'4 g'2 |",
+            "c''2  ees''4 f''16 c''16 d''16 a'16 | bes'4 a''4 f''2 |  ees''4  ees'4 g'2 |",
         )
         self.assertEqual(
             processing.lily_set_key(lily, -3),
-            "c''2  ees''4 f''16 c''16 d''16 aes'16 | b eess'4 aes''4 f''2 |  ees''4  ees'4 g'2 |",
+            "c''2  ees''4 f''16 c''16 d''16 aes'16 | bes'4 aes''4 f''2 |  ees''4  ees'4 g'2 |",
         )
         self.assertEqual(
             processing.lily_set_key(lily, -4),
-            "c''2  ees''4 f''16 c''16 des''16 aes'16 | b eess'4 aes''4 f''2 |  ees''4  ees'4 g'2 |",
+            "c''2  ees''4 f''16 c''16 des''16 aes'16 | bes'4 aes''4 f''2 |  ees''4  ees'4 g'2 |",
         )
         self.assertEqual(
             processing.lily_set_key(lily, -5),
-            "c''2  ees''4 f''16 c''16 des''16 aes'16 | b eess'4 aes''4 f''2 |  ees''4  ees'4 ges'2 |",
+            "c''2  ees''4 f''16 c''16 des''16 aes'16 | bes'4 aes''4 f''2 |  ees''4  ees'4 ges'2 |",
         )
         self.assertEqual(
             processing.lily_set_key(lily, -6),
-            "ces''2  ees''4 f''16 ces''16 des''16 aes'16 | b eess'4 aes''4 f''2 |  ees''4  ees'4 ges'2 |",
+            "ces''2  ees''4 f''16 ces''16 des''16 aes'16 | bes'4 aes''4 f''2 |  ees''4  ees'4 ges'2 |",
         )
         self.assertEqual(
             processing.lily_set_key(lily, 1),
@@ -241,7 +241,7 @@ class TestCleanUp(unittest.TestCase):
     def test_cleanup(self):
         file_cleanup.cleanup(0)
         for i in range(5):
-            f = open(f"./app/data/{i}.txt", "w")
+            f = open(f"./app/static/{i}.txt", "w")
             f.close()
 
         self.assertEqual(file_cleanup.cleanup(1), 0)

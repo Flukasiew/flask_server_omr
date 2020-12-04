@@ -20,8 +20,13 @@ def main():
 def local_main():
     url = "http://localhost:5000/predict_uri"
     img = {"image": open("./test_data/test.jpg", "rb")}
-    response = requests.post(url, files=img)
+    # Clef 2 gives bass, anything else gives standard
+    settings = {"tempo": 3, "key": -5, "clef": 2}
+    response = requests.post(url, files=img, data=settings)
     print(response.content)
+
+    with open("uri.txt", "w") as uri_file:
+        uri_file.write(response.json())
 
 
 if __name__ == "__main__":

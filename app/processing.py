@@ -5,8 +5,7 @@ import cv2
 from PIL import Image
 import numpy as np
 from uuid import uuid4
-from pathlib import Path
-from midi2audio import FluidSynth
+from pathlib import Path from midi2audio import FluidSynth
 
 
 def threshold_image(image):
