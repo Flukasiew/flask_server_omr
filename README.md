@@ -34,7 +34,7 @@ If not specified running commands assumes current working directory to be main d
     2.  Install Lilypond with system package manager
     3.  Check if both are available in the shell
 2.  Clone repo
-    $ git clon <https://github.com/Flukasiew/flask_server_omr>
+    $ git clone https://github.com/Flukasiew/flask_server_omr
 3.  Install conda enviroment
     1.  Download conda env from[ env](https://mega.nz/file/PaYTmAQC#DuVkHPnibDdIEsluH11Hy3Qrl48eU-TToly5KsaVOJU)
     2.  Install conda env with
