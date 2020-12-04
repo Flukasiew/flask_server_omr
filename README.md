@@ -9,9 +9,9 @@
         1.  [Adding job](#orgbc9a3be)
         2.  [Adding remove](#orgea0680a)
 4.  [EndPoints](#org0e7e587)
-    1.  [/static/file<sub>name</sub>](#org178e445)
-    2.  [/predict<sub>uri</sub>/file<sub>name</sub>](#org1bd08c0)
-    3.  [/ping](#org5411e75)
+    1.  /static/filename
+    2.  /predict\_uri</sub>/filename
+    3.  /ping
 
 
 
@@ -92,14 +92,14 @@ $ flask crontab remove
 
 <a id="org178e445"></a>
 
-## /static/file<sub>name</sub>
+## /static/filename
 
 Gives acces to file on server, streaming is possible from this file
 
 
 <a id="org1bd08c0"></a>
 
-## /predict<sub>uri</sub>/file<sub>name</sub>
+## /predict\_uri</sub>/filename
 
 Runs prediciton on the supplied image
 Returns uri in form &ldquo;static/file<sub>name</sub>&rdquo; can be used to access file on the server
