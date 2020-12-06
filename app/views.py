@@ -73,14 +73,16 @@ def predict_uri():
         return "Internal Model error", 500
 
     try:
-        processed_lily = lily_postprocess(
-            predicted_lily,
-            int(settings.get("clef", 1)),
-            int(settings.get("key", 0)),
-            int(settings.get("tempo", 1)),
-        )
+        clef = int(settings.get("clef", 1))
+        key = int(settings.get("key", 0))
+        tempo = int(settings.get("tempo", 1))
     except ValueError:
         return "Wrong settings format they should be convertible to int", 500
+
+    try:
+        processed_lily = lily_postprocess(predicted_lily, clef, key, tempo)
+    except:
+        return "Processing error", 500
 
     path = generate_audio(processed_lily)
 

@@ -118,7 +118,7 @@ def lily_adjust_from_bass_notation(lily):
         "c'''",
     ]
 
-    note_pattern = r"\w{1}'*,*\d"
+    note_pattern = r"[cdefgab]{1}'*,*\d+"
     for note in findall(note_pattern, lily):
         pitch = findall(r"[^\d]+", note)[0]
         duration = findall(r"\d+", note)[0]
