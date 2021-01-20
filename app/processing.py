@@ -13,8 +13,6 @@ def threshold_image(image):
     """"""
     grayImage = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     return cv2.threshold(grayImage, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
-    # image = cv2.cvtColor(post_bin, cv2.COLOR_GRAY2RGB)
-    # return post_bin
 
 
 def resize(image, height):
@@ -165,7 +163,6 @@ def generate_mid(lily, path):
         return False
     # command = f"lilypond -dmid-extension=mid -o {path} {path}.ly"
     try:
-        # run_result = run(command, shell=True, check=True)
         run_result = run(
             ["lilypond", "-dmidi-extension=mid", "-o", f"{path}", f"{path}.ly"],
             check=True,
