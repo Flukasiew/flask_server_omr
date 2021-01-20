@@ -19,8 +19,8 @@ class ModelHandler:
             word_idx = len(self.int2word)
             self.int2word[word_idx] = word
         dict_file.close()
-        saver = tf.train.import_meta_graph("./app/model/night_model-62000.meta")
-        saver.restore(self.sess, "./app/model/night_model-62000")
+        saver = tf.train.import_meta_graph("./app/model/saved_models-45000.meta")
+        saver.restore(self.sess, "./app/model/saved_models-45000")
         self.graph = tf.get_default_graph()
         self.input = self.graph.get_tensor_by_name("model_input:0")
         self.seq_len = self.graph.get_tensor_by_name("seq_lengths:0")
