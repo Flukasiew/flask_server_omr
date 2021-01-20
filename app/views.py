@@ -15,7 +15,6 @@ import numpy as np
 
 model_handler = ModelHandler()
 
-
 @app.route("/predict_file", methods=["POST"])
 def predict_file():
 
