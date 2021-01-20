@@ -42,10 +42,6 @@ requests==2.25.1
 scikit-image==0.17.2
 scipy==1.5.4
 six==1.15.0
-tensorboard==1.14.0
-tensorflow @ file:///home/flukasiew/tensorflow-1.14.1-cp36-cp36m-linux_x86_64.whl
-tensorflow-estimator==1.14.0
-tensorflow-tensorboard==1.5.1
 termcolor==1.1.0
 tifffile==2020.9.3
 typing-extensions==3.7.4.3
