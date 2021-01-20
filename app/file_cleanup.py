@@ -12,7 +12,7 @@ def cleanup(cycle=10):
     """
 
     deleted_files_count = 0
-    data_dir = "~/app/app/static"
+    data_dir = "./app/static"
     seconds = time() - (60 * cycle)
 
     if path.exists(data_dir):
